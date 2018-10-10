@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    "rss-web",
+    "rss-dao",
+]
