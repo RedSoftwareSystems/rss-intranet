@@ -34,7 +34,7 @@ pub fn find_by_email(
     conn: &PooledConnection<PostgresConnectionManager>,
     email: &'static str,
 ) -> Result<Option<(Uuid, User)>, DaoError> {
-    let prepared_s = conn.prepare("SELECT id, data FROM users WHERE data->>'email' = $1")?; //.map_err(|e| Err(e));
+    let prepared_s = conn.prepare("SELECT id, data FROM users WHERE data->>'email' = $1")?;
 
     let result = prepared_s.query(&[&email])?;
     if result.is_empty() {
@@ -47,19 +47,6 @@ pub fn find_by_email(
         Ok(Some((uuid, user)))
     }
 }
-
-// pub fn get_user_by_email(
-//     client: Client,
-//     email: &'static str,
-// ) -> impl Future<Item = (Option<Value>, Client), Error = Error> + 'static {
-//     find_by_email(client, email).map(|(row, client)| match row {
-//         Some(row) => {
-//             let data: Value = row.get(0);
-//             (Some(data), client)
-//         }
-//         _ => (None, client),
-//     })
-// }
 
 #[cfg(test)]
 mod tests {
@@ -78,7 +65,7 @@ mod tests {
         let pool = create_test_pool();
         let pool_c = pool.clone();
         let conn = pool_c.get().unwrap();
-        let (_, user) = find_by_email(&conn, "kiuma72@gmail.com").unwrap().unwrap();
-        assert_eq!("kiuma", user.user_name);
+        let (_, user) = find_by_email(&conn, "user1@test.com").unwrap().unwrap();
+        assert_eq!("user1", user.user_name);
     }
 }

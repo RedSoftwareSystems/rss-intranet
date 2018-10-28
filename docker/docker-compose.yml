@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  #webapp:
+  rss_test_db:
+    environment:
+      - POSTGRES_USER=pgactix
+      - POSTGRES_PASSWORD=pgactix
+    build:
+      context: ./
+      dockerfile: Dockerfile.postgres
+    networks:
+      rss_test_db:
+    ports:
+      - 5433:5432
+    volumes:
+      - rss_pgtest:/var/lib/postgresql/data
+networks:
+  rss_test_db:
+    driver: bridge
+volumes:
+  rss_pgtest:                               
