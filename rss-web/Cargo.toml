@@ -5,3 +5,7 @@ authors = ["Andrea Chiumenti <achiumenti@red.software.systems>"]
 edition = "2018"
 
 [dependencies]
+actix = "0.7.9"
+actix-web = "0.7.18" 
+juniper = "0.11.1"
+rss-dao = {path = '../rss-dao'}

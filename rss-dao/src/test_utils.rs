@@ -1,7 +1,7 @@
 use super::*;
 
-pub fn create_test_pool() -> r2d2::Pool<PostgresConnectionManager> {
-    create_pool(
+pub fn create_test_pool() -> DaoPbConnPool {
+    DaoPbConnPool::new(
         "localhost",
         5433,
         "pgactix",
