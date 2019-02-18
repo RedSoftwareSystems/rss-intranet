@@ -1,5 +1,4 @@
 use super::DaoError;
-use r2d2_postgres::PostgresConnectionManager;
 use serde_json::Value;
 use uuid::Uuid;
 
@@ -15,12 +14,12 @@ pub struct User {
 }
 
 pub fn find_by_email(
-    dao_conn: DaoDbConnection,
-    email: &'static str,
+    dao_conn: &DaoDbConnection,
+    email: &str,
 ) -> Result<Option<(Uuid, User)>, DaoError> {
-    let conn: r2d2::PooledConnection<PostgresConnectionManager> = dao_conn.into();
-
-    let prepared_s = conn.prepare("SELECT id, data FROM users WHERE data->>'email' = $1")?;
+    let prepared_s = dao_conn
+        .connection
+        .prepare("SELECT id, data FROM users WHERE data->>'email' = $1")?;
 
     let result = prepared_s.query(&[&email])?;
     if result.is_empty() {
@@ -51,7 +50,7 @@ mod tests {
     fn test_find_by_email() {
         let pool = create_test_pool();
         let conn = pool.new_connection().unwrap();
-        let (_, user) = find_by_email(conn, "user1@test.com").unwrap().unwrap();
+        let (_, user) = find_by_email(&conn, "user1@test.com").unwrap().unwrap();
         assert_eq!("user1", user.user_name);
     }
 }

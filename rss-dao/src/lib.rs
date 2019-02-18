@@ -7,6 +7,14 @@ pub struct DaoPbConnPool {
     db_connection_pool: r2d2::Pool<PostgresConnectionManager>,
 }
 
+impl Clone for DaoPbConnPool {
+    fn clone(&self) -> DaoPbConnPool {
+        DaoPbConnPool {
+            db_connection_pool: self.db_connection_pool.clone(),
+        }
+    }
+}
+
 pub struct DaoDbConnection {
     connection: r2d2::PooledConnection<PostgresConnectionManager>,
 }
@@ -49,7 +57,7 @@ impl DaoPbConnPool {
     }
 }
 
-fn create_pool(
+pub fn create_pool(
     host: &str,
     port: u16,
     db: &str,
@@ -69,7 +77,7 @@ fn create_pool(
 
 #[derive(Debug)]
 pub struct DaoError {
-    description: String,
+    pub description: String,
     cause: Option<Box<Error>>,
 }
 
@@ -78,8 +86,6 @@ impl DaoError {
         DaoError { description, cause }
     }
 }
-
-// impl Error for DaoError {}
 
 impl From<postgres::Error> for DaoError {
     fn from(error: postgres::Error) -> Self {
@@ -106,6 +112,7 @@ mod test_utils;
 mod tests {
 
     use super::test_utils::*;
+    use super::users::find_by_email;
 
     #[test]
     fn it_works() {
@@ -116,6 +123,14 @@ mod tests {
     fn connection_works() {
         let pool = create_test_pool();
         let _ = pool.new_connection();
+    }
+
+    #[test]
+    fn find_user1() {
+        let pool = create_test_pool();
+        let conn = pool.new_connection().unwrap();
+        let (_, user) = find_by_email(&conn, "user1@test.com").unwrap().unwrap();
+        assert_eq!("user1", user.user_name);
     }
 
 }
