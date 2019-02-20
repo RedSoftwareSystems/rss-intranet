@@ -47,6 +47,16 @@ graphql_object!(JUser: () |&self| {
     },
 });
 
+#[derive(GraphQLInputObject)]
+#[graphql(description = "A humanoid creature in the Star Wars universe")]
+struct NewUser {
+    first_name: String,
+    last_name: String,
+    email: String,
+    user_name: String,
+    
+}
+
 graphql_object!(QueryRoot: DbConnection |&self| {
     field user(&executor, email: String) -> FieldResult<Option<JUser>> {
         let conn = &executor.context().0;
@@ -65,12 +75,9 @@ graphql_object!(QueryRoot: DbConnection |&self| {
 pub struct MutationRoot;
 
 graphql_object!(MutationRoot: DbConnection |&self| {
-    // field createHser(&executor, new_user: JUser) -> FieldResult<JUser> {
-    //     Ok(JUser(User{
-
-    //     })
-          
-    // }
+    field createUser(&executor, new_user: NewUser) -> FieldResult<JUser> {
+        Err(FieldError::new("Not implemented", graphql_value!({ "internal_error": "not implemented" })))
+    }
 });
 
 pub type Schema = RootNode<'static, QueryRoot, MutationRoot>;
